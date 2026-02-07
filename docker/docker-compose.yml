@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    volumes:
+      - ./backend/src:/app/src
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend/src:/app/src
+    command: npm start
+
+  # Placeholder pour le serveur Minecraft (à configurer plus tard)
+  # minecraft:
+  #   image: minecraft:latest
+  #   ports:
+  #     - "25565:25565"
+  #   volumes:
+  #     - minecraft-data:/data
+
+volumes:
+  minecraft-data:
