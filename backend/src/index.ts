@@ -147,6 +147,22 @@ const toPosixPath = (base: string, name: string) => {
   return `${base.replace(/\/+$/, "")}/${name}`;
 };
 
+const getQueryParam = (req: Request, key: string): string => {
+  const value = req.query[key];
+  if (Array.isArray(value)) {
+    return String(value[0] ?? "");
+  }
+  return String(value ?? "");
+};
+
+const getRouteParam = (req: Request, key: string): string => {
+  const value = req.params[key];
+  if (Array.isArray(value)) {
+    return String(value[0] ?? "");
+  }
+  return String(value ?? "");
+};
+
 const parsePlayerList = (line: string) => {
   const match = line.match(/There are (\d+) of a max of (\d+) players online:?\s*(.*)/i);
   if (!match) {
@@ -411,7 +427,7 @@ app.get("/api/servers/:id/status", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -426,7 +442,7 @@ app.post("/api/servers/:id/start", (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -444,7 +460,7 @@ app.post("/api/servers/:id/stop", (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -462,7 +478,7 @@ app.post("/api/servers/:id/restart", (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -480,7 +496,7 @@ app.get("/api/servers/:id/logs", (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -496,7 +512,7 @@ app.post("/api/servers/:id/command", (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -516,7 +532,7 @@ app.get("/api/servers/:id/stats", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -588,12 +604,12 @@ app.get("/api/servers/:id/files", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
 
-  const relPath = String(req.query.path ?? "");
+  const relPath = getQueryParam(req, "path");
   let resolved;
   try {
     resolved = resolveServerPath(server, relPath);
@@ -640,12 +656,12 @@ app.get("/api/servers/:id/files/content", async (req: Request, res: Response) =>
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
 
-  const relPath = String(req.query.path ?? "");
+  const relPath = getQueryParam(req, "path");
   let resolved;
   try {
     resolved = resolveServerPath(server, relPath);
@@ -670,7 +686,7 @@ app.post("/api/servers/:id/files/content", async (req: Request, res: Response) =
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -699,7 +715,7 @@ app.post("/api/servers/:id/files/dir", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -725,7 +741,7 @@ app.post("/api/servers/:id/files/rename", async (req: Request, res: Response) =>
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -755,7 +771,7 @@ app.delete("/api/servers/:id/files", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -781,7 +797,7 @@ app.post("/api/servers/:id/files/upload", async (req: Request, res: Response) =>
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
@@ -817,7 +833,7 @@ app.get("/api/servers/:id/files/download", async (req: Request, res: Response) =
     return res.status(500).json({ error: "No servers configured." });
   }
 
-  const server = getServerById(req.params.id);
+  const server = getServerById(getRouteParam(req, "id"));
   if (!server) {
     return res.status(404).json({ error: "Server not found." });
   }
