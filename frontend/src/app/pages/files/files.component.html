@@ -1,0 +1,112 @@
+<section class="files-page">
+  <header class="files-header">
+    <div>
+      <h1>Files</h1>
+      <p>Browse and edit files for the selected server.</p>
+    </div>
+    <div class="files-actions">
+      <button class="ghost" type="button" (click)="refresh()">
+        <mat-icon class="button-icon">refresh</mat-icon>
+        Refresh
+      </button>
+      <button class="ghost" type="button" (click)="createFolder()">
+        <mat-icon class="button-icon">create_new_folder</mat-icon>
+        New folder
+      </button>
+      <button class="ghost" type="button" (click)="createFile()">
+        <mat-icon class="button-icon">note_add</mat-icon>
+        New file
+      </button>
+      <button class="ghost" type="button" (click)="rename()" [disabled]="!selectedEntry">
+        <mat-icon class="button-icon">drive_file_rename_outline</mat-icon>
+        Rename
+      </button>
+      <button class="ghost" type="button" (click)="remove()" [disabled]="!selectedEntry">
+        <mat-icon class="button-icon">delete</mat-icon>
+        Delete
+      </button>
+      <button class="ghost" type="button" (click)="download()" [disabled]="selectedEntry?.type !== 'file'">
+        <mat-icon class="button-icon">download</mat-icon>
+        Download
+      </button>
+      <button class="ghost" type="button" (click)="triggerUpload()">
+        <mat-icon class="button-icon">upload</mat-icon>
+        Upload
+      </button>
+      <input #uploadInput type="file" class="hidden" (change)="handleUpload($event)" />
+    </div>
+  </header>
+
+  <div class="files-layout">
+    <aside class="files-sidebar">
+      <div class="path-row">
+        <button class="ghost" type="button" (click)="navigateUp()" [disabled]="!currentPath">
+          <mat-icon class="button-icon">arrow_upward</mat-icon>
+          Up
+        </button>
+        <div class="breadcrumbs">
+          <button
+            *ngFor="let crumb of breadcrumbs; let last = last"
+            class="breadcrumb"
+            type="button"
+            (click)="navigateTo(crumb.path)"
+            [disabled]="last"
+          >
+            {{ crumb.name }}
+          </button>
+        </div>
+      </div>
+      <input
+        class="files-search"
+        type="text"
+        placeholder="Search files"
+        [(ngModel)]="searchTerm"
+      />
+      <div class="files-list">
+        <button
+          class="file-entry"
+          *ngFor="let entry of filteredEntries"
+          [class.is-selected]="entry.path === selectedEntry?.path"
+          (click)="openEntry(entry)"
+        >
+          <span class="file-type">{{ entry.type === 'dir' ? 'DIR' : 'FILE' }}</span>
+          <span class="file-name">{{ entry.name }}</span>
+        </button>
+        <p class="files-empty" *ngIf="!filteredEntries.length && !loading">No files in this folder.</p>
+        <p class="files-empty" *ngIf="loading">Loading...</p>
+      </div>
+    </aside>
+
+    <main class="files-editor">
+      <div class="editor-toolbar">
+        <span>{{ selectedEntry?.name || 'Select a file to edit' }}</span>
+        <button class="primary-outline" type="button" (click)="save()" [disabled]="selectedEntry?.type !== 'file'">
+          <mat-icon class="button-icon">save</mat-icon>
+          Save
+        </button>
+      </div>
+      <div class="editor-host" #editorHost></div>
+      <p class="files-error" *ngIf="error">{{ error }}</p>
+    </main>
+  </div>
+
+  <div class="dialog-backdrop" *ngIf="dialogMode" (click)="closeDialog()"></div>
+  <div class="dialog" *ngIf="dialogMode">
+    <header>
+      <h2>{{ dialogTitle }}</h2>
+      <p>{{ dialogMessage }}</p>
+    </header>
+    <div class="dialog-body" *ngIf="dialogNeedsInput">
+      <input
+        type="text"
+        [(ngModel)]="dialogValue"
+        [placeholder]="dialogPlaceholder"
+        autofocus
+      />
+    </div>
+    <footer class="dialog-actions">
+      <button class="ghost" type="button" (click)="closeDialog()">Cancel</button>
+      <button class="primary" type="button" (click)="confirmDialog()">Confirm</button>
+    </footer>
+  </div>
+</section>

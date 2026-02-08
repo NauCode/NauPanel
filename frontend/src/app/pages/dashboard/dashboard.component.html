@@ -1,0 +1,113 @@
+<section class="hero" *ngIf="selectedServer">
+  <div class="hero-card">
+    <p class="eyebrow">Server overview</p>
+    <p class="server-name">{{ selectedServer.name }}</p>
+    <div class="server-meta">
+      <span class="server-pill">ID: {{ selectedServer.id }}</span>
+      <span class="server-pill">Port: {{ selectedServer.port }}</span>
+      <span class="server-pill">Path: {{ selectedServer.path }}</span>
+    </div>
+    <div class="server-description">
+      <p>
+        {{ selectedServer.description || 'Local instance ready for control, logs, and file access from this panel.' }}
+      </p>
+    </div>
+    <div class="quick-actions">
+      <h3>Quick actions</h3>
+      <div class="cta-row">
+        <button class="primary-outline">Start server</button>
+        <button class="danger-outline">Stop server</button>
+        <button class="warning-outline">Restart server</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-card hero-status">
+    <div class="stat">
+      <span class="stat-label">Status</span>
+      <span class="stat-value" [class.online]="stats?.status === 'online'">
+        {{ stats?.status || 'Unknown' }}
+      </span>
+    </div>
+    <div class="stat-list">
+      <div class="stat-item">
+        <div class="stat-header">
+          <span class="stat-label">Players</span>
+          <span class="stat-value">
+            {{ stats?.players?.online || 0 }} / {{ stats?.players?.max || 0 }}
+          </span>
+        </div>
+        <div class="stat-meter">
+          <span class="stat-fill" [style.width.%]="playerPercent"></span>
+          <span class="stat-max">Max {{ stats?.players?.max || 0 }} players</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-header">
+          <span class="stat-label">Tick</span>
+          <span class="stat-value">
+            {{ stats?.tps ? (stats?.tps | number: '1.1-1') : 'N/A' }} / 20
+          </span>
+        </div>
+        <div class="stat-meter">
+          <span class="stat-fill" [style.width.%]="tpsPercent"></span>
+          <span class="stat-max">Max 20 TPS</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-header">
+          <span class="stat-label">CPU (process)</span>
+          <span class="stat-value">{{ cpuPercent }}%</span>
+        </div>
+        <div class="stat-meter">
+          <span class="stat-fill" [style.width.%]="cpuPercent"></span>
+          <span class="stat-max">Max 100%</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-header">
+          <span class="stat-label">RAM (process)</span>
+          <span class="stat-value">
+            {{ memUsedMB }} / {{ memTotalMB }} MB
+          </span>
+        </div>
+        <div class="stat-meter">
+          <span class="stat-fill" [style.width.%]="memPercent"></span>
+          <span class="stat-max">Max {{ memTotalMB }} MB</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-header">
+          <span class="stat-label">World size</span>
+          <span class="stat-value">
+            {{ formatBytes(stats?.world?.sizeBytes) }}
+          </span>
+        </div>
+        <div class="stat-meter">
+          <span class="stat-fill" style="width: 100%"></span>
+          <span class="stat-max">Size on disk</span>
+        </div>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span>Updated: {{ stats?.timestamp | date: 'HH:mm:ss' }}</span>
+      <span *ngIf="stats?.players?.names?.length">
+        Players: {{ stats?.players?.names?.join(', ') }}
+      </span>
+    </div>
+  </div>
+
+</section>
+
+<section class="grid" *ngIf="selectedServer">
+  <article class="card">
+    <h2>Live console</h2>
+    <p>Stream the latest logs</p>
+    <div class="console-preview">
+      <span *ngFor="let line of logs">{{ line }}</span>
+      <span *ngIf="!logs.length">No logs yet.</span>
+    </div>
+    <button class="ghost">Open console</button>
+  </article>
+</section>
+
+<p class="server-loading" *ngIf="!selectedServer">Loading server...</p>

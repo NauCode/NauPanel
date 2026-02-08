@@ -1,0 +1,42 @@
+<section class="console-page">
+  <div class="console-header">
+    <div>
+      <h1>Console</h1>
+      <p>Live logs and command input for the selected server.</p>
+    </div>
+    <div class="console-meta" *ngIf="appState.selectedServer">
+      <span>{{ appState.selectedServer.name }}</span>
+      <span>{{ appState.selectedServer.port }}</span>
+    </div>
+    <div class="console-controls">
+      <label>
+        Lines
+        <select [(ngModel)]="lineLimit" (change)="onLimitChange()">
+          <option *ngFor="let option of lineLimitOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+      </label>
+      <button class="ghost" type="button" (click)="clearLogs()">Clear</button>
+    </div>
+  </div>
+
+  <div class="console-stream">
+    <div class="console-lines" #consoleLines>
+      <div *ngFor="let line of logs" class="console-line">{{ line }}</div>
+      <div *ngIf="!logs.length" class="console-empty">No logs yet.</div>
+    </div>
+  </div>
+
+  <div class="console-input">
+    <input
+      type="text"
+      placeholder="Type a command (e.g. save-all)"
+      [(ngModel)]="command"
+      (keydown.enter)="sendCommand()"
+    />
+    <button class="primary-outline" type="button" (click)="sendCommand()" [disabled]="sending">
+      {{ sending ? 'Sending...' : 'Send' }}
+    </button>
+  </div>
+</section>

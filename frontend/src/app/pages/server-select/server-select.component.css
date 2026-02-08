@@ -1,0 +1,101 @@
+.select-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.select-card {
+  width: min(720px, 100%);
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 12, 20, 0.85);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.select-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.select-header .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.select-header h1 {
+  margin: 0;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.select-header .lead {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.server-list {
+  display: grid;
+  gap: 12px;
+}
+
+.server-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 7, 12, 0.8);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.server-item.is-selected {
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.server-name {
+  display: block;
+  font-weight: 600;
+}
+
+.server-meta {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.server-port {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+.empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.error {
+  margin: 12px 0 0;
+  color: #ffb3b3;
+  font-size: 13px;
+}
+

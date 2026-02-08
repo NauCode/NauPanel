@@ -1,0 +1,35 @@
+<div class="select-shell">
+  <div class="select-card">
+    <div class="select-header">
+      <p class="eyebrow">Choose server</p>
+      <div class="header-row">
+        <h1>Select a server to manage</h1>
+        <button class="ghost" type="button" (click)="refreshServers()">Refresh</button>
+      </div>
+      <p class="lead">Each panel session targets a single Minecraft server.</p>
+    </div>
+
+    <div class="server-list" *ngIf="servers.length; else emptyState">
+      <button
+        class="server-item"
+        *ngFor="let server of servers"
+        type="button"
+        [class.is-selected]="server.id === selectedId"
+        (click)="openServer(server.id)"
+      >
+        <div>
+          <span class="server-name">{{ server.name }}</span>
+          <span class="server-meta">{{ server.path }}</span>
+        </div>
+        <span class="server-port">{{ server.port }}</span>
+      </button>
+    </div>
+
+    <ng-template #emptyState>
+      <p class="empty">No servers configured. Check the backend config file.</p>
+    </ng-template>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+  </div>
+</div>

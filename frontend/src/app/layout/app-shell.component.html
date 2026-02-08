@@ -1,0 +1,59 @@
+<div class="app-shell">
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <span class="brand-title">NauPanel</span>
+        <span class="brand-subtitle">Minecraft control center</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="status-carousel" *ngIf="currentStatusServer as server; else noStatus">
+        <span
+          class="status-pill"
+          [class.is-online]="appState.statuses[server.id]?.status === 'online'"
+          [class.is-restarting]="appState.statuses[server.id]?.status === 'restarting'"
+        >
+          <span class="dot"></span>
+          {{ server.name }}: {{ statusLabel(appState.statuses[server.id]) }}
+          <span class="status-count">{{ statusIndex + 1 }} / {{ statusTotal }}</span>
+        </span>
+      </div>
+      <ng-template #noStatus>
+        <span class="status-pill">
+          <span class="dot"></span>
+          No servers
+        </span>
+      </ng-template>
+      <button
+        class="server-chip"
+        *ngIf="selectedServerName"
+        type="button"
+        routerLink="/select"
+      >
+        Active: {{ selectedServerName }}
+        <svg class="chip-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M7 7h10l-2.5-2.5 1.4-1.4L21.8 9l-5.9 5.9-1.4-1.4L17 11H7V7Zm10 10H7l2.5 2.5-1.4 1.4L2.2 15l5.9-5.9 1.4 1.4L7 13h10v4Z"
+          />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="side-nav">
+    <a class="nav-item" routerLink="/app" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+    <a class="nav-item" routerLink="/app/console" routerLinkActive="is-active">Console</a>
+    <a class="nav-item" routerLink="/app/files" routerLinkActive="is-active">Files</a>
+    <a class="nav-item" routerLink="/app/backups" routerLinkActive="is-active">Backups</a>
+    <div class="nav-divider"></div>
+    <a class="nav-item" routerLink="/app/settings" routerLinkActive="is-active">Settings</a>
+    <div class="nav-divider"></div>
+    <a class="nav-item" routerLink="/select">Back to selection</a>
+  </aside>
+
+  <main class="panel">
+    <router-outlet />
+  </main>
+</div>
