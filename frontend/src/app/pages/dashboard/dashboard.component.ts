@@ -5,6 +5,7 @@ import { Subject, Subscription, timer } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { AppStateService } from '../../services/app-state.service';
 import { ConsoleSocketService } from '../../services/console-socket.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +35,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (id) {
           this.consoleSocket.connect(id, 50);
           this.statsSub = timer(0, 5000)
-            .pipe(switchMap(() => this.http.get<ServerStats>(`/api/servers/${id}/stats`)))
+            .pipe(
+              switchMap(() =>
+                this.http.get<ServerStats>(this.buildApiUrl(`/servers/${id}/stats`))
+              )
+            )
             .subscribe({
               next: (stats) => (this.stats = stats),
               error: () => (this.stats = null)
@@ -112,6 +117,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       unitIndex += 1;
     }
     return `${size.toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+  }
+
+  private buildApiUrl(path: string): string {
+    const base = environment.apiBaseUrl || '/api';
+    if (base.endsWith('/') && path.startsWith('/')) {
+      return `${base.slice(0, -1)}${path}`;
+    }
+    if (!base.endsWith('/') && !path.startsWith('/')) {
+      return `${base}/${path}`;
+    }
+    return `${base}${path}`;
   }
 }
 

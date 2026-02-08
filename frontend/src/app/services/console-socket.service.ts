@@ -3,8 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-const WS_PATH = '/ws/console';
-
 type WsMessage =
   | { type: 'subscribe'; serverId: string; limit?: number }
   | { type: 'command'; command: string }
@@ -72,7 +70,7 @@ export class ConsoleSocketService {
 
     if (environment.useMocks) {
       this.http
-        .post(`/api/servers/${this.serverId}/command`, { command: trimmed })
+        .post(this.buildApiUrl(`/servers/${this.serverId}/command`), { command: trimmed })
         .subscribe({
           next: () => this.fetchLogs(),
           error: () => undefined
@@ -95,8 +93,7 @@ export class ConsoleSocketService {
   }
 
   private openSocket(): void {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const url = `${protocol}://${window.location.host}${WS_PATH}`;
+    const url = this.buildWsUrl();
     this.socket = new WebSocket(url);
     this.socket.onmessage = (event) => this.onMessage(event);
     this.socket.onopen = () => {
@@ -150,12 +147,44 @@ export class ConsoleSocketService {
     }
 
     this.http
-      .get<{ logs: string[] }>(`/api/servers/${this.serverId}/logs?limit=${this.limit}`)
+      .get<{ logs: string[] }>(
+        this.buildApiUrl(`/servers/${this.serverId}/logs?limit=${this.limit}`)
+      )
       .subscribe({
         next: (response) => {
           this.logsSubject.next(response.logs.slice(-this.maxDisplay));
         },
         error: () => this.logsSubject.next([])
       });
+  }
+
+  private buildApiUrl(path: string): string {
+    const base = environment.apiBaseUrl || '/api';
+    if (base.endsWith('/') && path.startsWith('/')) {
+      return `${base.slice(0, -1)}${path}`;
+    }
+    if (!base.endsWith('/') && !path.startsWith('/')) {
+      return `${base}/${path}`;
+    }
+    return `${base}${path}`;
+  }
+
+  private buildWsUrl(): string {
+    const wsBase = environment.wsBaseUrl || '/ws/console';
+    if (wsBase.startsWith('ws://') || wsBase.startsWith('wss://')) {
+      return wsBase;
+    }
+
+    const apiBase = environment.apiBaseUrl || '';
+    if (apiBase.startsWith('http://') || apiBase.startsWith('https://')) {
+      const apiUrl = new URL(apiBase);
+      const protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsPath = wsBase.startsWith('/') ? wsBase : `/${wsBase}`;
+      return `${protocol}//${apiUrl.host}${wsPath}`;
+    }
+
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsPath = wsBase.startsWith('/') ? wsBase : `/${wsBase}`;
+    return `${protocol}://${window.location.host}${wsPath}`;
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export type ServerConfig = {
   id: string;
@@ -91,7 +92,7 @@ export class AppStateService {
     }, 5000);
 
     this.http
-      .get<{ servers: ServerConfig[] }>('/api/servers')
+      .get<{ servers: ServerConfig[] }>(this.buildApiUrl('/servers'))
       .pipe(timeout(3000))
       .subscribe({
         next: (response) => {
@@ -127,7 +128,9 @@ export class AppStateService {
 
     const requests = servers.map((server) =>
       this.http
-        .get<{ server: ServerConfig; state: ServerState }>(`/api/servers/${server.id}/status`)
+        .get<{ server: ServerConfig; state: ServerState }>(
+          this.buildApiUrl(`/servers/${server.id}/status`)
+        )
         .pipe(
           catchError(() =>
             of({
@@ -154,5 +157,16 @@ export class AppStateService {
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
+  }
+
+  private buildApiUrl(path: string): string {
+    const base = environment.apiBaseUrl || '/api';
+    if (base.endsWith('/') && path.startsWith('/')) {
+      return `${base.slice(0, -1)}${path}`;
+    }
+    if (!base.endsWith('/') && !path.startsWith('/')) {
+      return `${base}/${path}`;
+    }
+    return `${base}${path}`;
   }
 }

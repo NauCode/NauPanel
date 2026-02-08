@@ -1,3 +1,5 @@
 export const environment = {
-  useMocks: false
+  useMocks: false,
+  apiBaseUrl: '/api',
+  wsBaseUrl: '/ws/console'
 };
