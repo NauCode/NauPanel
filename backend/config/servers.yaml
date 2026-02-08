@@ -1,18 +1,18 @@
 servers:
-  - id: nau-survival
-    name: Nau Survival
-    path: D:/Minecraft/servers/nau-survival
+  - id: example-survival
+    name: Example Survival
+    path: /path/to/minecraft/servers/survival
     port: 25565
-    description: Vanilla survival world focused on long-term progression.
+    description: Example survival server.
     rcon:
       host: 127.0.0.1
       port: 25575
       password: change-me
-  - id: nau-creative
-    name: Nau Creative
-    path: D:/Minecraft/servers/nau-creative
+  - id: example-creative
+    name: Example Creative
+    path: /path/to/minecraft/servers/creative
     port: 25566
-    description: Creative sandbox for builds, schematics, and experiments.
+    description: Example creative server.
     rcon:
       host: 127.0.0.1
       port: 25576
