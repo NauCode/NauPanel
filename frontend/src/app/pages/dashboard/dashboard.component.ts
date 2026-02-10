@@ -1,8 +1,8 @@
 import { DatePipe, DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, Subscription, timer } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { of, Subject, Subscription, timer } from 'rxjs';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { AppStateService } from '../../services/app-state.service';
 import { ConsoleSocketService } from '../../services/console-socket.service';
 import { environment } from '../../../environments/environment';
@@ -37,12 +37,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statsSub = timer(0, 5000)
             .pipe(
               switchMap(() =>
-                this.http.get<ServerStats>(this.buildApiUrl(`/servers/${id}/stats`))
+                this.http
+                  .get<ServerStats>(this.buildApiUrl(`/servers/${id}/stats`))
+                  .pipe(catchError(() => of(null)))
               )
             )
             .subscribe({
-              next: (stats) => (this.stats = stats),
-              error: () => (this.stats = null)
+              next: (stats) => (this.stats = stats)
             });
         } else {
           this.logs = [];
