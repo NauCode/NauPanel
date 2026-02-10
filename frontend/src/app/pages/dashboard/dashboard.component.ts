@@ -17,6 +17,7 @@ import { environment } from '../../../environments/environment';
 export class DashboardComponent implements OnInit, OnDestroy {
   logs: string[] = [];
   stats: ServerStats | null = null;
+  statsError = '';
   private destroy$ = new Subject<void>();
   private statsSub: Subscription | null = null;
 
@@ -27,6 +28,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (!this.appState.servers.length && !this.appState.loading) {
+      this.appState.loadServers();
+    }
+
     this.appState.selectedServerId$
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
@@ -39,11 +44,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
               switchMap(() =>
                 this.http
                   .get<ServerStats>(this.buildApiUrl(`/servers/${id}/stats`))
-                  .pipe(catchError(() => of(null)))
+                  .pipe(
+                    catchError(() => {
+                      this.statsError = 'Unable to load server stats.';
+                      return of(this.stats);
+                    })
+                  )
               )
             )
             .subscribe({
-              next: (stats) => (this.stats = stats)
+              next: (stats) => {
+                this.statsError = '';
+                this.stats = stats;
+              }
             });
         } else {
           this.logs = [];
@@ -66,6 +79,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   get selectedServer() {
     return this.appState.selectedServer;
+  }
+
+  get selectedServerId(): string {
+    return this.appState.selectedServerId;
   }
 
   get playerPercent(): number {

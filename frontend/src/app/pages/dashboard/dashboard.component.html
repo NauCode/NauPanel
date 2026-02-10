@@ -1,15 +1,15 @@
-<section class="hero" *ngIf="selectedServer">
+<section class="hero" *ngIf="selectedServerId">
   <div class="hero-card">
     <p class="eyebrow">Server overview</p>
-    <p class="server-name">{{ selectedServer.name }}</p>
+    <p class="server-name">{{ selectedServer?.name || selectedServerId }}</p>
     <div class="server-meta">
-      <span class="server-pill">ID: {{ selectedServer.id }}</span>
-      <span class="server-pill">Port: {{ selectedServer.port }}</span>
-      <span class="server-pill">Path: {{ selectedServer.path }}</span>
+      <span class="server-pill">ID: {{ selectedServer?.id || selectedServerId }}</span>
+      <span class="server-pill">Port: {{ selectedServer?.port ?? '-' }}</span>
+      <span class="server-pill">Path: {{ selectedServer?.path || '-' }}</span>
     </div>
     <div class="server-description">
       <p>
-        {{ selectedServer.description || 'Local instance ready for control, logs, and file access from this panel.' }}
+        {{ selectedServer?.description || 'Local instance ready for control, logs, and file access from this panel.' }}
       </p>
     </div>
     <div class="quick-actions">
@@ -90,6 +90,7 @@
     </div>
     <div class="status-bar">
       <span>Updated: {{ stats?.timestamp | date: 'HH:mm:ss' }}</span>
+      <span *ngIf="statsError">{{ statsError }}</span>
       <span *ngIf="stats?.players?.names?.length">
         Players: {{ stats?.players?.names?.join(', ') }}
       </span>
@@ -98,7 +99,7 @@
 
 </section>
 
-<section class="grid" *ngIf="selectedServer">
+<section class="grid" *ngIf="selectedServerId">
   <article class="card">
     <h2>Live console</h2>
     <p>Stream the latest logs</p>
@@ -110,4 +111,4 @@
   </article>
 </section>
 
-<p class="server-loading" *ngIf="!selectedServer">Loading server...</p>
+<p class="server-loading" *ngIf="!selectedServerId">Loading server...</p>

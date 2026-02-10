@@ -317,6 +317,40 @@ const getDirectorySize = async (dirPath: string): Promise<number> => {
   return total;
 };
 
+const parseServerProperties = (raw: string) => {
+  const lines = raw.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+    const [key, ...rest] = trimmed.split('=');
+    if (key === 'level-name') {
+      return rest.join('=').trim();
+    }
+  }
+  return '';
+};
+
+const getWorldPath = async (serverPath: string) => {
+  const propertiesPath = path.join(serverPath, 'server.properties');
+  let worldName = 'world';
+  try {
+    const raw = await fs.readFile(propertiesPath, 'utf-8');
+    const parsed = parseServerProperties(raw);
+    if (parsed) {
+      worldName = parsed;
+    }
+  } catch {
+    // fallback to default world folder
+  }
+
+  if (path.isAbsolute(worldName)) {
+    return worldName;
+  }
+  return path.join(serverPath, worldName);
+};
+
 const getHostStats = () => {
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
@@ -567,7 +601,7 @@ app.get("/api/servers/:id/stats", async (req: Request, res: Response) => {
     const hostStats = getHostStats();
     const pid = await findProcessByPath(server.path);
     const processStats = pid ? await getProcessStats(pid) : null;
-    const worldPath = path.join(server.path, "world");
+    const worldPath = await getWorldPath(server.path);
     const worldSizeBytes = await getDirectorySize(worldPath);
     const state = getServerState(server.id);
     state.status = "online";
