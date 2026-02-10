@@ -56,6 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
               next: (stats) => {
                 this.statsError = '';
                 this.stats = stats;
+                console.log('[Dashboard] stats payload', stats);
               }
             });
         } else {

@@ -1,19 +1,9 @@
 servers:
-  - id: example-survival
-    name: Example Survival
-    path: /path/to/minecraft/servers/survival
-    port: 25565
-    description: Example survival server.
-    rcon:
-      host: 127.0.0.1
-      port: 25575
-      password: change-me
-  - id: example-creative
-    name: Example Creative
-    path: /path/to/minecraft/servers/creative
-    port: 25566
-    description: Example creative server.
-    rcon:
-      host: 127.0.0.1
-      port: 25576
-      password: change-me
+- id: bmc3
+  name: Better MC Fabric (BMC3)
+  path: /minecraft/bmc3
+  port: 16383
+  rcon:
+    host: 192.168.1.209
+    port: 25575
+    password: change-me
